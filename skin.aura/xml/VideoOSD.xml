@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<window>
+	<defaultcontrol always="true">602</defaultcontrol>
+	<depth>DepthOSD</depth>
+	<controls>
+		<!-- Tap above chrome to dismiss -->
+		<control type="button">
+			<description>background close area</description>
+			<left>0</left>
+			<top>0</top>
+			<width>100%</width>
+			<bottom>300</bottom>
+			<texturefocus />
+			<texturenofocus />
+			<onclick>Action(close)</onclick>
+		</control>
+
+		<control type="group">
+			<include>Animation_BottomSlide</include>
+			<bottom>0</bottom>
+			<height>280</height>
+			<visible>![Window.IsVisible(SliderDialog) | Window.IsVisible(1110) | Window.IsVisible(osdaudiosettings) | Window.IsVisible(osdvideosettings) | Window.IsVisible(VideoBookmarks) | Window.IsVisible(playerprocessinfo) | Window.IsVisible(osdcmssettings) | Window.IsVisible(PVROSDChannels) | Window.IsVisible(pvrchannelguide) | Window.IsVisible(dialogselectaudio) | Window.IsVisible(dialogselectsubtitle)]</visible>
+			<animation effect="fade" time="200">VisibleChange</animation>
+
+			<!-- Fade -->
+			<control type="image">
+				<left>-40</left>
+				<top>0</top>
+				<width>120%</width>
+				<height>300</height>
+				<texture flipy="true">frame/osdfade.png</texture>
+			</control>
+
+			<!-- Title + remaining -->
+			<control type="label">
+				<left>96</left>
+				<top>24</top>
+				<width>1200</width>
+				<height>40</height>
+				<font>font27</font>
+				<label>$VAR[AuraOSDTitleVar]</label>
+				<shadowcolor>black</shadowcolor>
+			</control>
+			<control type="label">
+				<right>96</right>
+				<top>24</top>
+				<width>400</width>
+				<height>40</height>
+				<align>right</align>
+				<font>font27</font>
+				<label>$INFO[Player.TimeRemaining,-]</label>
+				<shadowcolor>black</shadowcolor>
+				<visible>!VideoPlayer.Content(LiveTV)</visible>
+			</control>
+
+			<!-- Seek -->
+			<control type="group" id="6000">
+				<top>70</top>
+				<visible>Player.SeekEnabled</visible>
+				<control type="button" id="87">
+					<include>HiddenObject</include>
+					<onup>201</onup>
+					<ondown>201</ondown>
+					<onleft>StepBack</onleft>
+					<onright condition="!Player.Paused">StepForward</onright>
+					<onright condition="Player.Paused">PlayerControl(FrameAdvance(1))</onright>
+				</control>
+				<control type="progress">
+					<left>96</left>
+					<top>12</top>
+					<width>1728</width>
+					<height>6</height>
+					<info>Player.Progress</info>
+					<texturebg border="3" colordiffuse="40FFFFFF">colors/white.png</texturebg>
+					<lefttexture />
+					<midtexture colordiffuse="white">colors/white.png</midtexture>
+					<righttexture />
+					<overlaytexture />
+					<visible>!VideoPlayer.Content(LiveTV)</visible>
+				</control>
+				<control type="label">
+					<left>96</left>
+					<top>28</top>
+					<width>200</width>
+					<height>28</height>
+					<font>font12</font>
+					<label>$INFO[Player.Time]</label>
+					<textcolor>grey</textcolor>
+					<visible>!VideoPlayer.Content(LiveTV)</visible>
+				</control>
+				<control type="label">
+					<right>96</right>
+					<top>28</top>
+					<width>200</width>
+					<height>28</height>
+					<align>right</align>
+					<font>font12</font>
+					<label>$INFO[Player.Duration]</label>
+					<textcolor>grey</textcolor>
+					<visible>!VideoPlayer.Content(LiveTV)</visible>
+				</control>
+			</control>
+
+			<!-- Actions: skip / play / skip / audio / CC / more -->
+			<control type="grouplist" id="201">
+				<left>96</left>
+				<top>140</top>
+				<width>1728</width>
+				<height>100</height>
+				<itemgap>16</itemgap>
+				<scrolltime tween="sine">200</scrolltime>
+				<orientation>horizontal</orientation>
+				<onup>87</onup>
+				<ondown>ActivateWindow(DialogSelectAudio)</ondown>
+				<onleft>201</onleft>
+				<onright>201</onright>
+
+				<control type="radiobutton" id="610">
+					<include content="OSDButton">
+						<param name="texture" value="osd/fullscreen/buttons/previous.png"/>
+					</include>
+					<onclick>PlayerControl(SmallSkipBackward)</onclick>
+					<visible>Player.SeekEnabled + !VideoPlayer.Content(livetv)</visible>
+				</control>
+
+				<control type="group" id="698">
+					<width>76</width>
+					<height>76</height>
+					<visible>Player.PauseEnabled</visible>
+					<control type="button" id="602">
+						<left>0</left>
+						<top>0</top>
+						<width>74</width>
+						<height>74</height>
+						<label></label>
+						<font></font>
+						<texturefocus colordiffuse="button_focus">osd/fullscreen/buttons/button-fo.png</texturefocus>
+						<texturenofocus />
+						<onleft>610</onleft>
+						<onright>611</onright>
+						<onup>87</onup>
+						<ondown>ActivateWindow(DialogSelectAudio)</ondown>
+						<onclick>PlayerControl(Play)</onclick>
+					</control>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>74</width>
+						<height>74</height>
+						<animation center="38,38" effect="zoom" end="100" reversible="false" start="95" time="200" tween="sine" condition="Control.HasFocus(602)">Conditional</animation>
+						<texture colordiffuse="white">$VAR[PlayerControlsPlayImageVar]</texture>
+					</control>
+				</control>
+
+				<control type="radiobutton" id="611">
+					<include content="OSDButton">
+						<param name="texture" value="osd/fullscreen/buttons/next.png"/>
+					</include>
+					<onclick>PlayerControl(SmallSkipForward)</onclick>
+					<visible>Player.SeekEnabled + !VideoPlayer.Content(livetv)</visible>
+				</control>
+
+				<!-- Audio sheet -->
+				<control type="button" id="620">
+					<width>auto</width>
+					<height>74</height>
+					<textoffsetx>20</textoffsetx>
+					<label>$VAR[AuraOSDAudioLabelVar]</label>
+					<font>font25</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<texturefocus border="20" colordiffuse="button_focus">buttons/dialogbutton-fo.png</texturefocus>
+					<texturenofocus border="40">buttons/dialogbutton-nofo.png</texturenofocus>
+					<onclick>ActivateWindow(DialogSelectAudio)</onclick>
+				</control>
+
+				<!-- Subtitles sheet -->
+				<control type="button" id="621">
+					<width>auto</width>
+					<height>74</height>
+					<textoffsetx>20</textoffsetx>
+					<label>$VAR[AuraOSDSubtitleLabelVar]</label>
+					<font>font25</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<texturefocus border="20" colordiffuse="button_focus">buttons/dialogbutton-fo.png</texturefocus>
+					<texturenofocus border="40">buttons/dialogbutton-nofo.png</texturenofocus>
+					<onclick>ActivateWindow(DialogSelectSubtitle)</onclick>
+					<enable>VideoPlayer.HasSubtitles | true</enable>
+				</control>
+
+				<!-- Next in playlist -->
+				<control type="radiobutton" id="607">
+					<include content="OSDButton">
+						<param name="texture" value="osd/fullscreen/buttons/next.png"/>
+					</include>
+					<onclick>PlayerControl(Next)</onclick>
+					<visible>Integer.IsGreater(Playlist.Length(video),1) | Player.ChapterCount | Player.HasSceneMarkers</visible>
+				</control>
+
+				<!-- More / tweak -->
+				<control type="radiobutton" id="70048">
+					<include content="OSDButton">
+						<param name="texture" value="osd/fullscreen/buttons/settings.png"/>
+					</include>
+					<onclick>SetProperty(settingsdialog_content,videosettings,home)</onclick>
+					<onclick>SetProperty(settingsdialog_header,$LOCALIZE[31710],home)</onclick>
+					<onclick>ActivateWindow(1101)</onclick>
+				</control>
+
+				<!-- Stop kept for PVR / escape hatch, smaller path -->
+				<control type="radiobutton" id="603">
+					<include content="OSDButton">
+						<param name="texture" value="osd/fullscreen/buttons/stop.png"/>
+					</include>
+					<onclick>PlayerControl(Stop)</onclick>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

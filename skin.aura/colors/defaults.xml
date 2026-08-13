@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<colors>
+	<!-- Aura design tokens: true black living-room chrome -->
+	<color name="primary_background">FF0B0B0D</color>
+	<color name="secondary_background">33000000</color>
+	<color name="dialog_tint">FF0B0B0D</color>
+	<color name="dialog_header_tint">FF141416</color>
+	<color name="background">FF000000</color>
+	<color name="bg_image">FF909090</color>
+	<color name="bg_overlay">40FFFFFF</color>
+	<color name="black">FF000000</color>
+	<color name="white">FFEBEBF5</color>
+	<color name="grey">FF9999A8</color>
+	<color name="blue">FF7AA2FF</color>
+	<color name="red">FFCE4421</color>
+	<color name="button_focus">FFFFFFFF</color>
+	<color name="button_alt_focus">80FFFFFF</color>
+	<color name="text_shadow">88000000</color>
+	<color name="border_alpha">40FFFFFF</color>
+	<color name="disabled">40FFFFFF</color>
+	<color name="selected">FFEBEBF5</color>
+	<color name="invalid">FFFF0000</color>
+</colors>

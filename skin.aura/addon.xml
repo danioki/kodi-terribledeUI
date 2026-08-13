@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="skin.aura" version="0.1.0" name="Aura" provider-name="Aura contributors (based on Estuary by phil65, Ichabod Fletchman)">
+	<requires>
+		<import addon="xbmc.gui" version="5.18.0"/>
+	</requires>
+	<extension point="xbmc.gui.skin" debugging="false">
+		<res width="1920" height="1440" aspect="4:3" default="false" folder="xml" />
+		<res width="1920" height="1280" aspect="3:2" default="false" folder="xml" />
+		<res width="1920" height="1200" aspect="16:10" default="false" folder="xml" />
+		<res width="2040" height="1080" aspect="17:9" default="false" folder="xml" />
+		<res width="1920" height="1080" aspect="16:9" default="true" folder="xml" />
+		<res width="2560" height="1080" aspect="21:9" default="false" folder="xml" />
+		<res width="2338" height="1080" aspect="19.5:9" default="false" folder="xml" />
+		<res width="2160" height="1080" aspect="18:9" default="false" folder="xml" />
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<platform>all</platform>
+		<license>CC BY-SA 4.0, GNU GENERAL PUBLIC LICENSE Version 2.0</license>
+		<source>https://github.com/danioki/kodi-terribledeUI</source>
+		<assets>
+			<icon>resources/icon.png</icon>
+			<fanart>resources/fanart.jpg</fanart>
+			<screenshot>resources/screenshot-01.jpg</screenshot>
+			<screenshot>resources/screenshot-02.jpg</screenshot>
+			<screenshot>resources/screenshot-03.jpg</screenshot>
+			<screenshot>resources/screenshot-04.jpg</screenshot>
+			<screenshot>resources/screenshot-05.jpg</screenshot>
+			<screenshot>resources/screenshot-06.jpg</screenshot>
+			<screenshot>resources/screenshot-07.jpg</screenshot>
+			<screenshot>resources/screenshot-08.jpg</screenshot>
+		</assets>
+		<summary lang="en_GB">Aura — Apple TV–inspired skin focused on Home and playback</summary>
+		<summary lang="es_ES">Aura — skin inspirada en Apple TV, centrada en Inicio y reproducción</summary>
+		<description lang="en_GB">Aura is a living-room skin for Kodi 22 (Piers). Home leads with Novedades, then Continue Watching and library shelves. Playback uses a minimal OSD with one-click audio and subtitle sheets. Based on Estuary.</description>
+		<description lang="es_ES">Aura es una skin de salón para Kodi 22 (Piers). Inicio empieza por Novedades y sigue con Seguir viendo y las bibliotecas. La reproducción usa un OSD mínimo con hojas de audio y subtítulos. Basada en Estuary.</description>
+		<disclaimer lang="en_GB">Based on Estuary. Removing Estuary from Kodi may still cause issues; Aura is a separate add-on.</disclaimer>
+		<disclaimer lang="es_ES">Basada en Estuary. Aura es un add-on aparte.</disclaimer>
+	</extension>
+</addon>
