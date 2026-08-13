@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">810</defaultcontrol>
+	<backgroundcolor>background</backgroundcolor>
+	<controls>
+		<!-- Bounce helpers for vertical shelf scroll -->
+		<control type="button" id="20000">
+			<include>HiddenObject</include>
+			<animation effect="fade" time="300" start="100" end="0">Focus</animation>
+			<onfocus>SetFocus(9000)</onfocus>
+			<onclick>noop</onclick>
+			<visible allowhiddenfocus="true">Control.HasFocus(20000)</visible>
+		</control>
+		<control type="button" id="20001">
+			<include>HiddenObject</include>
+			<animation effect="fade" time="300" start="100" end="0">Focus</animation>
+			<onfocus>SetFocus(5001)</onfocus>
+			<onclick>noop</onclick>
+			<visible allowhiddenfocus="true">Control.HasFocus(20001)</visible>
+		</control>
+
+		<include>DefaultBackground</include>
+
+		<!-- Hero fanart from focused shelf item -->
+		<control type="multiimage">
+			<depth>DepthBackground</depth>
+			<include>FullScreenDimensions</include>
+			<aspectratio>scale</aspectratio>
+			<fadetime>400</fadetime>
+			<animation effect="fade" start="0" end="100" time="400">WindowOpen</animation>
+			<animation effect="fade" start="100" end="0" time="300">WindowClose</animation>
+			<animation effect="fade" time="400">VisibleChange</animation>
+			<imagepath background="true" colordiffuse="bg_overlay">$VAR[HomeFanartVar]</imagepath>
+			<visible>!Player.HasMedia</visible>
+		</control>
+		<!-- Bottom vignette so shelves stay readable -->
+		<control type="image">
+			<depth>DepthBackground</depth>
+			<left>0</left>
+			<top>420</top>
+			<width>100%</width>
+			<bottom>0</bottom>
+			<texture flipy="false">frame/osdfade.png</texture>
+			<colordiffuse>FF000000</colordiffuse>
+		</control>
+		<control type="image">
+			<depth>DepthBackground</depth>
+			<left>0</left>
+			<top>0</top>
+			<width>100%</width>
+			<height>520</height>
+			<texture flipy="true">frame/osdfade.png</texture>
+			<colordiffuse>CC000000</colordiffuse>
+		</control>
+
+		<!-- Top tabs -->
+		<control type="group" id="9000">
+			<depth>DepthBars</depth>
+			<left>80</left>
+			<top>28</top>
+			<width>1600</width>
+			<height>72</height>
+			<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
+			<control type="grouplist" id="9001">
+				<left>0</left>
+				<top>0</top>
+				<width>1600</width>
+				<height>72</height>
+				<orientation>horizontal</orientation>
+				<itemgap>28</itemgap>
+				<onup>noop</onup>
+				<ondown>5100</ondown>
+				<onleft>9001</onleft>
+				<onright>9001</onright>
+				<control type="button" id="801">
+					<width>auto</width>
+					<height>64</height>
+					<label>$LOCALIZE[137]</label>
+					<font>font27</font>
+					<textoffsetx>8</textoffsetx>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>grey</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus />
+					<texturenofocus />
+					<onclick>ActivateWindow(1107)</onclick>
+				</control>
+				<control type="button" id="810">
+					<width>auto</width>
+					<height>64</height>
+					<label>$LOCALIZE[31700]</label>
+					<font>font27</font>
+					<textoffsetx>8</textoffsetx>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>white</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus />
+					<texturenofocus />
+					<onfocus condition="Integer.IsGreater(Container(5100).NumItems,0)">SetFocus(5100)</onfocus>
+					<onfocus condition="Integer.IsEqual(Container(5100).NumItems,0) + Integer.IsGreater(Container(5200).NumItems,0)">SetFocus(5200)</onfocus>
+					<onfocus condition="Integer.IsEqual(Container(5100).NumItems,0) + Integer.IsEqual(Container(5200).NumItems,0) + Integer.IsGreater(Container(5500).NumItems,0)">SetFocus(5500)</onfocus>
+					<onclick>SetFocus(5100)</onclick>
+				</control>
+				<control type="button" id="811">
+					<width>auto</width>
+					<height>64</height>
+					<label>$LOCALIZE[342]</label>
+					<font>font27</font>
+					<textoffsetx>8</textoffsetx>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>grey</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus />
+					<texturenofocus />
+					<onclick condition="Library.HasContent(movies)">ActivateWindow(Videos,videodb://movies/titles/,return)</onclick>
+					<onclick condition="!Library.HasContent(movies)">ActivateWindow(Videos,sources://video/,return)</onclick>
+				</control>
+				<control type="button" id="812">
+					<width>auto</width>
+					<height>64</height>
+					<label>$LOCALIZE[20343]</label>
+					<font>font27</font>
+					<textoffsetx>8</textoffsetx>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>grey</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus />
+					<texturenofocus />
+					<onclick condition="Library.HasContent(tvshows)">ActivateWindow(Videos,videodb://tvshows/titles/,return)</onclick>
+					<onclick condition="!Library.HasContent(tvshows)">ActivateWindow(Videos,sources://video/,return)</onclick>
+				</control>
+				<control type="button" id="802">
+					<width>auto</width>
+					<height>64</height>
+					<label>$LOCALIZE[5]</label>
+					<font>font27</font>
+					<textoffsetx>8</textoffsetx>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>grey</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus />
+					<texturenofocus />
+					<onclick>ActivateWindow(settings)</onclick>
+				</control>
+			</control>
+		</control>
+
+		<!-- Clock -->
+		<control type="label">
+			<depth>DepthBars</depth>
+			<right>96</right>
+			<top>40</top>
+			<width>280</width>
+			<height>48</height>
+			<align>right</align>
+			<aligny>center</aligny>
+			<font>font25</font>
+			<label>$INFO[System.Time]</label>
+			<textcolor>grey</textcolor>
+			<shadowcolor>text_shadow</shadowcolor>
+		</control>
+
+		<!-- Hero title for focused item -->
+		<control type="group">
+			<left>96</left>
+			<top>120</top>
+			<width>900</width>
+			<height>280</height>
+			<visible>ControlGroup(5001).HasFocus</visible>
+			<animation effect="fade" time="200">VisibleChange</animation>
+			<control type="label">
+				<left>0</left>
+				<top>0</top>
+				<width>900</width>
+				<height>80</height>
+				<font>font45</font>
+				<label>$INFO[Container.ListItem.Label]</label>
+				<textcolor>white</textcolor>
+				<shadowcolor>text_shadow</shadowcolor>
+			</control>
+			<control type="label">
+				<left>0</left>
+				<top>90</top>
+				<width>900</width>
+				<height>40</height>
+				<font>font27</font>
+				<label>$INFO[Container.ListItem.Year]$INFO[Container.ListItem.Duration, · ]</label>
+				<textcolor>grey</textcolor>
+			</control>
+			<control type="textbox">
+				<left>0</left>
+				<top>140</top>
+				<width>780</width>
+				<height>110</height>
+				<font>font25</font>
+				<label>$INFO[Container.ListItem.Plot]</label>
+				<textcolor>grey</textcolor>
+			</control>
+		</control>
+
+		<!-- Vertical feed: Novedades first, then normal sections -->
+		<control type="group" id="2000">
+			<left>0</left>
+			<top>380</top>
+			<bottom>0</bottom>
+			<right>0</right>
+			<animation effect="fade" start="0" end="100" time="300" delay="100">WindowOpen</animation>
+			<control type="grouplist" id="5001">
+				<include>WidgetGroupListCommon</include>
+				<pagecontrol>5010</pagecontrol>
+				<!-- Novedades: movies -->
+				<include content="WidgetListEpisodes" condition="Library.HasContent(movies)">
+					<param name="content_path" value="videodb://recentlyaddedmovies/"/>
+					<param name="widget_header" value="$LOCALIZE[31701]"/>
+					<param name="widget_target" value="videos"/>
+					<param name="list_id" value="5100"/>
+					<param name="main_label" value="$INFO[ListItem.Title]"/>
+					<param name="sub_label" value="$INFO[ListItem.Year]"/>
+					<param name="thumb_label" value=""/>
+					<param name="widget_limit" value="20"/>
+					<param name="browse_mode" value="never"/>
+				</include>
+				<!-- Novedades: episodes -->
+				<include content="WidgetListEpisodes" condition="Library.HasContent(tvshows)">
+					<param name="content_path" value="videodb://recentlyaddedepisodes/"/>
+					<param name="widget_header" value="$LOCALIZE[31702]"/>
+					<param name="widget_target" value="videos"/>
+					<param name="list_id" value="5200"/>
+					<param name="widget_limit" value="20"/>
+					<param name="browse_mode" value="never"/>
+				</include>
+				<!-- Seguir viendo: movies -->
+				<include content="WidgetListEpisodes" condition="Library.HasContent(movies)">
+					<param name="content_path" value="special://skin/playlists/inprogress_movies.xsp"/>
+					<param name="widget_header" value="$LOCALIZE[31703]"/>
+					<param name="widget_target" value="videos"/>
+					<param name="list_id" value="5300"/>
+					<param name="main_label" value="$INFO[ListItem.Title]"/>
+					<param name="sub_label" value="$INFO[ListItem.Year]"/>
+					<param name="thumb_label" value=""/>
+					<param name="browse_mode" value="never"/>
+				</include>
+				<!-- Seguir viendo: TV -->
+				<include content="WidgetListPoster" condition="Library.HasContent(tvshows)">
+					<param name="content_path" value="videodb://inprogresstvshows"/>
+					<param name="sortby" value="lastplayed"/>
+					<param name="sortorder" value="descending"/>
+					<param name="widget_header" value="$LOCALIZE[31704]"/>
+					<param name="widget_target" value="videos"/>
+					<param name="list_id" value="5400"/>
+					<param name="onclick_condition" value="true"/>
+					<param name="onclick_action" value="$VAR[TVShowOnClickActionVar]"/>
+				</include>
+				<!-- Películas -->
+				<include content="WidgetListPoster" condition="Library.HasContent(movies)">
+					<param name="content_path" value="videodb://movies/titles/"/>
+					<param name="widget_header" value="$LOCALIZE[342]"/>
+					<param name="widget_target" value="videos"/>
+					<param name="list_id" value="5500"/>
+				</include>
+				<!-- Series -->
+				<include content="WidgetListPoster" condition="Library.HasContent(tvshows)">
+					<param name="content_path" value="videodb://tvshows/titles/"/>
+					<param name="widget_header" value="$LOCALIZE[20343]"/>
+					<param name="widget_target" value="videos"/>
+					<param name="list_id" value="5600"/>
+					<param name="onclick_condition" value="true"/>
+					<param name="onclick_action" value="$VAR[TVShowOnClickActionVar]"/>
+				</include>
+				<!-- Favoritos -->
+				<include content="WidgetListSquare" condition="!Skin.HasSetting(HomeMenuNoFavButton)">
+					<param name="content_path" value="favourites://"/>
+					<param name="widget_header" value="$LOCALIZE[10134]"/>
+					<param name="widget_target" value="favourites"/>
+					<param name="list_id" value="5700"/>
+					<param name="fallback_icon" value="DefaultFavourites.png"/>
+				</include>
+				<!-- Música -->
+				<include content="WidgetListSquare" condition="Library.HasContent(music) + !Skin.HasSetting(HomeMenuNoMusicButton)">
+					<param name="content_path" value="musicdb://recentlyaddedalbums/"/>
+					<param name="widget_header" value="$LOCALIZE[2]"/>
+					<param name="widget_target" value="music"/>
+					<param name="list_id" value="5800"/>
+				</include>
+				<!-- Directo -->
+				<include content="WidgetListPVR" condition="System.HasPVRAddon + !Skin.HasSetting(HomeMenuNoTVButton)">
+					<param name="content_path" value="pvr://channels/tv/*?view=lastplayed"/>
+					<param name="widget_header" value="$LOCALIZE[19020]"/>
+					<param name="widget_target" value="tv"/>
+					<param name="list_id" value="5900"/>
+					<param name="sortby" value="lastplayed"/>
+					<param name="sortorder" value="descending"/>
+					<param name="item_treshold" value="-1"/>
+					<param name="item_limit" value="15"/>
+				</include>
+				<!-- Addons -->
+				<include content="WidgetListSquare" condition="!Skin.HasSetting(HomeMenuNoProgramsButton)">
+					<param name="content_path" value="addons://sources/video/"/>
+					<param name="widget_header" value="$LOCALIZE[24001]"/>
+					<param name="widget_target" value="videos"/>
+					<param name="list_id" value="6000"/>
+					<param name="fallback_icon" value="DefaultAddon.png"/>
+				</include>
+			</control>
+
+			<!-- Empty library -->
+			<include content="ImageWidget" condition="!Library.HasContent(movies) + !Library.HasContent(tvshows)">
+				<param name="text_label" value="$LOCALIZE[31705]" />
+				<param name="button_label" value="$LOCALIZE[31110]" />
+				<param name="button_onclick" value="ActivateWindow(videos,files,return)"/>
+				<param name="button_id" value="7000"/>
+				<param name="button2_label" value="$LOCALIZE[5]"/>
+				<param name="button2_onclick" value="ActivateWindow(settings)"/>
+			</include>
+		</control>
+	</controls>
+</window>

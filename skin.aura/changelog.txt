@@ -1,0 +1,5 @@
+v0.1.0
+- Initial Aura fork of Estuary (Piers / xbmc.gui 5.18)
+- Home: Novedades first, then Continue Watching and library shelves (no sidebar)
+- VideoOSD: skip / play / Audio / CC / More with bottom stream sheets
+- Dark living-room color tokens
