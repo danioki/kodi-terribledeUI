@@ -283,13 +283,12 @@ Cada fase termina en un zip instalable y una checklist de mando (arriba/abajo/ok
 
 ## 9. Cómo se prueba
 
-Kodi en esta VM de desarrollo no es el entorno real. El loop previsto:
+Solo en **Kodi local** (tu HTPC / LibreELEC / Windows). Sin harness cloud.
 
 1. Editar XML en el repo.
-2. Empaquetar `skin.aura` (zip o carpeta en `addons/`).
+2. Empaquetar `skin.aura` (zip) o copiar la carpeta a `addons/`.
 3. Instalar / reload skin (`ReloadSkin()`).
-4. Probar con teclado como D-pad (flechas, enter, backspace).
-5. Más adelante: CoreELEC / Windows HTPC con mando real.
+4. Probar con mando o teclado como D-pad (flechas, enter, backspace).
 
 Checklist de Inicio (obligatoria): arranca en Novedades, hero sigue al foco, Seguir viendo debajo, Películas/Series después, sin sidebar ni recently added duplicado.
 

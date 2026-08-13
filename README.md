@@ -4,25 +4,24 @@ Dos pilares: **Inicio** (Novedades primero, luego seguir viendo / películas / s
 
 ## Estado
 
-Implementación inicial (`skin.aura` 0.1.0), basada en Estuary. Probada en esta VM con **Kodi 20.5 + VNC** (Home OK; hojas de pistas de Piers pendientes de Kodi 22).
+Implementación inicial (`skin.aura` 0.1.0), basada en Estuary. Pensada para instalarse en **tu Kodi local** (HTPC / LibreELEC / Windows / etc.). Ideal en Kodi 22 (Piers) para Audio/CC; en 20/21 el Home ya se puede mirar.
 
-## Probar en la VM / escritorio VNC
-
-Este environment ya trae XFCE + TigerVNC + noVNC. Con Kodi instalado:
+## Instalar en local
 
 ```bash
-scripts/run-kodi-vnc.sh
+git clone https://github.com/danioki/kodi-terribledeUI.git
+cd kodi-terribledeUI
+git checkout cursor/aura-skin-impl-87c0
+cd skin.aura && zip -r ../skin.aura.zip . && cd ..
 ```
 
-Detalle: [docs/testing.md](docs/testing.md).
+En Kodi: **Add-ons → Install from zip file** → `skin.aura.zip` → **Ajustes → Interfaz → Skin → Aura**.
 
-## Instalar en un HTPC
+Sin zip, copia la carpeta `skin.aura` a:
 
-1. Empaqueta `skin.aura/` en un zip (raíz = carpeta con `addon.xml`).
-2. Kodi → Add-ons → Install from zip.
-3. Interface → Skin → Aura.
-
-Ideal: **Kodi 22 Piers** para Audio/CC sheets. En 20/21 sirve para validar Home.
+- Windows: `%APPDATA%\Kodi\addons\`
+- Linux: `~/.kodi/addons/`
+- LibreELEC / CoreELEC: `/storage/.kodi/addons/`
 
 ## Docs
 
@@ -30,7 +29,6 @@ Ideal: **Kodi 22 Piers** para Audio/CC sheets. En 20/21 sirve para validar Home.
 - [docs/home-ux.md](docs/home-ux.md)
 - [docs/player-ux.md](docs/player-ux.md)
 - [docs/design-system.md](docs/design-system.md)
-- [docs/testing.md](docs/testing.md)
 
 ## Licencia
 
