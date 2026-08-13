@@ -198,7 +198,7 @@ skin.aura/
 
 Resolución de trabajo: **1920×1080**. Otras aspectos después, si hace falta.
 
-Dependencias del MVP: `xbmc.gui` de **Piers (Kodi 22)**. Sin Skin Shortcuts, sin TMDbHelper, sin Up Next de terceros. El player usa APIs nativas de pistas.
+Dependencias del MVP: `xbmc.gui` **≥ 5.16** (carga en Nexus/Omega para probar Home). Las hojas nativas `DialogSelectAudio` / `DialogSelectSubtitle` requieren **Piers (5.18+)**. Sin Skin Shortcuts ni TMDbHelper.
 
 Opcional más adelante: `script.skinshortcuts` para reordenar estanterías desde Settings.
 
