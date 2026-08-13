@@ -4,22 +4,25 @@ Dos pilares: **Inicio** (Novedades primero, luego seguir viendo / películas / s
 
 ## Estado
 
-Implementación inicial (`skin.aura` 0.1.0), basada en Estuary (Kodi 22 / Piers, `xbmc.gui` 5.18).
+Implementación inicial (`skin.aura` 0.1.0), basada en Estuary. Probada en esta VM con **Kodi 20.5 + VNC** (Home OK; hojas de pistas de Piers pendientes de Kodi 22).
 
-## Instalar
+## Probar en la VM / escritorio VNC
 
-1. Empaqueta la carpeta `skin.aura` en un zip (la raíz del zip debe ser `skin.aura/` con `addon.xml` dentro).
-2. En Kodi 22: Settings → Add-ons → Install from zip file.
-3. Settings → Interface → Skin → Aura.
+Este environment ya trae XFCE + TigerVNC + noVNC. Con Kodi instalado:
 
-O copia `skin.aura/` a `userdata/addons/` (o `~/.kodi/addons/`) y reinicia Kodi.
+```bash
+scripts/run-kodi-vnc.sh
+```
 
-## Qué hay en 0.1.0
+Detalle: [docs/testing.md](docs/testing.md).
 
-- Home a pantalla completa sin sidebar: tabs Search · Home · Movies · TV · Settings.
-- Feed vertical: **Novedades** (películas + episodios), Seguir viendo, Películas, Series, Favoritos, Música, Directo, Addons.
-- OSD mínimo: skip, play, Audio / CC con estado, Más; hojas de pistas abajo (Piers `DialogSelectAudio` / `DialogSelectSubtitle`).
-- Paleta negra / foco blanco.
+## Instalar en un HTPC
+
+1. Empaqueta `skin.aura/` en un zip (raíz = carpeta con `addon.xml`).
+2. Kodi → Add-ons → Install from zip.
+3. Interface → Skin → Aura.
+
+Ideal: **Kodi 22 Piers** para Audio/CC sheets. En 20/21 sirve para validar Home.
 
 ## Docs
 
@@ -27,7 +30,8 @@ O copia `skin.aura/` a `userdata/addons/` (o `~/.kodi/addons/`) y reinicia Kodi.
 - [docs/home-ux.md](docs/home-ux.md)
 - [docs/player-ux.md](docs/player-ux.md)
 - [docs/design-system.md](docs/design-system.md)
+- [docs/testing.md](docs/testing.md)
 
 ## Licencia
 
-Basada en Estuary (CC BY-SA 4.0 / GPL-2.0). Ver `skin.aura/LICENSE.txt`.
+Basada en Estuary (CC BY-SA 4.0 / GPL-2.0). Ver `skin.aura/LICENSE.txt` y `NOTICE.md`.
