@@ -1,7 +1,10 @@
 # Plan: skin de Kodi inspirada en Apple TV
 
 Nombre de trabajo: **Aura** (`skin.aura`).
-Objetivo: una interfaz de 10 pies, oscura, con mucho aire y foco claro, que se sienta como el Apple TV actual (tvOS 17/18), no como Estuary ni como las clones de Apple TV 2/3/4.
+
+Objetivo principal: **ver una película o una serie sin pelearte con Kodi**. Cambiar subtítulos, cambiar audio, saltar 10 segundos y pasar al siguiente capítulo tiene que ser tan directo como en un reproductor moderno (Apple TV / Disney+). El look de salón (pestañas, hero, estanterías) es el marco; el producto es el player.
+
+Spec de reproducción: [`docs/player-ux.md`](docs/player-ux.md).
 
 Este documento es el plan de producto y arquitectura. No implementa la skin todavía.
 
@@ -12,6 +15,14 @@ Este documento es el plan de producto y arquitectura. No implementa la skin toda
 Kodi no tiene “temas CSS”. La UI es un **addon de tipo skin**: XML + texturas PNG + fuentes + `addon.xml`. Cada pantalla de Kodi (Home, biblioteca, OSD, settings, PVR, diálogos…) es un archivo XML obligatorio. Si falta uno, Kodi cae a Estuary o se rompe.
 
 Por eso **no se diseña una app nueva**. Se diseña una skin que Kodi puede cargar.
+
+### Prioridad de producto
+
+1. **Reproducción seamless** — OSD, audio, subtítulos, seek, siguiente episodio.
+2. Ficha del título (Play sin fricción).
+3. Home / biblioteca al estilo tvOS (descubrimiento).
+
+Si hay que recortar, se recorta el home, no el player.
 
 ### Referencia visual: Apple TV *actual*
 
@@ -24,6 +35,7 @@ El Apple TV de 2015 (rejilla de iconos de apps) **no** es el que queremos. Skins
 - El foco **escala**, levanta sombra y muestra el título; el resto se queda quieto.
 - Fondo casi negro, tipografía grande, poco cromo, mucho espacio.
 - Mando / D-pad como input principal. El ratón es secundario.
+- Durante el vídeo: cromo mínimo, hoja única de Audio + subtítulos, no un árbol de settings.
 
 ### Qué no vamos a copiar
 
@@ -43,10 +55,12 @@ Una skin completa de Kodi tiene del orden de **80–100 ventanas XML** (Home, My
 | --- | --- | --- | --- |
 | Skin desde cero | Libertad total | Meses en diálogos/settings; fácil dejar huecos | Descartada para el MVP |
 | Fork de AppTV / tvOS-X | Ya “parece Apple” | Imitan ATV antiguo; código viejo; poco mantenimiento | Descartada |
-| Fork de Arctic Horizon 2 | Widgets potentes, look moderno | Compleja, depende de Skin Shortcuts + TMDbHelper | Fase 2 si hace falta |
-| **Fork de Estuary (Omega/Piers)** | Completa, mantenida, widgets nativos, CC BY-SA 4.0 | Hay que destrozar el look (menú lateral, densidad) | **Base del MVP** |
+| Fork de Arctic Horizon 2 | Widgets potentes, look moderno | Compleja, Skin Shortcuts + TMDbHelper | Más adelante, si hace falta |
+| **Fork de Estuary (Piers / Kodi 22)** | Completa; Piers trae `DialogSelectAudio` / `DialogSelectSubtitle` | Hay que destrozar OSD y home de Estuary | **Base del MVP** |
 
-Estuary ya tiene el patrón que necesitamos: `Home.xml` + includes `WidgetListPoster` que apuntan a `videodb://…` o playlists `.xsp`. El trabajo de producto es **cambiar el layout y el sistema visual**, no inventar el data binding.
+Estuary cubre todas las ventanas. Piers es el target porque por fin el motor **lista las pistas** (idioma, tick de activa, Off de subs) en diálogos que la skin puede pintar. En Omega 21 solo hay `CycleSubtitle` y settings: no da para una hoja moderna.
+
+El trabajo de producto no es inventar el data binding de la librería. Es **sacar audio/subs de los settings y ponerlos en el cromo de ver**.
 
 Licencia: Estuary es CC BY-SA 4.0 / GPL-2.0. Aura debe atribuir y compartir bajo licencia compatible.
 
@@ -61,6 +75,8 @@ El skinning engine no es SwiftUI. Esto sí se puede:
 - Esquinas redondeadas vía texturas (máscaras PNG).
 - Widgets de librería sin Python extra.
 - Navegación D-pad explícita (`onup` / `ondown` / `onleft` / `onright`).
+- Piers: `ActivateWindow(DialogSelectAudio|Subtitle)` con listas reales de pistas.
+- Acciones de player: `ShowSubtitles`, `Seek()`, `PlayerControl(Play)`, delay de audio/subs.
 
 Esto no (o muy a medias):
 
@@ -68,6 +84,8 @@ Esto no (o muy a medias):
 - Gaussian blur vivo del fanart (se finge con imagen oscurecida + viñeta).
 - Tipografía variable y tracking fino de SF Pro.
 - Layout fluido tipo `containerRelativeFrame` (todo es coordenadas 1920×1080).
+- Un único control nativo “Audio + Subs en dos columnas” (se finge con dos diálogos o un custom window).
+- Skip intro automático sin chapters / addon.
 
 Diseñar *dentro* de esas reglas, no pelear contra ellas.
 
@@ -94,7 +112,21 @@ Principio: **un solo foco inequívoco**. Nada de bordes de color + glow + underl
 
 ## 5. Pantallas que definen el producto
 
-El 80% de la percepción es Home + biblioteca + ficha + OSD. El resto puede quedar “Estuary oscuro” al principio.
+El 80% de la percepción es **el player**. Home + biblioteca + ficha solo sirven para llegar a Play. El resto puede quedar “Estuary oscuro” al principio.
+
+### 5.0 Player (la firma)
+
+Detalle en [`docs/player-ux.md`](docs/player-ux.md).
+
+Dos capas:
+
+- **Ver:** cromo inferior (título, restante, seek, skip ±10s, Audio, CC, Más). El vídeo no se pausa.
+- **Elegir pista:** una hoja. Idioma primero, codec debajo. Off de subtítulos es un ítem. Un click aplica y cierra.
+- **Ajustar (`···`):** delay, tamaño de subs, info de codec. Nunca para cambiar de idioma.
+
+Estuary hoy manda al usuario a `osdaudiosettings` / `osdsubtitlesettings` / `CycleSubtitle`. Eso se sustituye. En Piers, los botones Audio y CC abren `DialogSelectAudio` y `DialogSelectSubtitle` skineados como esa hoja.
+
+Criterio de éxito: MKV con 2 audios y 3 subs → cambiar idioma y CC en un click cada uno, sin entrar en Settings.
 
 ### 5.1 Home (la firma)
 
@@ -150,13 +182,9 @@ Página de título tipo Apple TV:
 - Botones: Play, Trailer, Queue, más…
 - Debajo: reparto en estantería horizontal, similar, extras.
 
-### 5.4 Player OSD (DialogSeekBar)
+### 5.4 Resto (fase posterior)
 
-Cromo mínimo: barra inferior, título, tiempo, transport. Sin paneles laterales enormes. Pause puede mostrar poster + sinopsis corta.
-
-### 5.5 Resto (fase posterior)
-
-Settings, PVR, música, addons, teclado, selectores: recolor + tipografía + focus tokens. Layout Estuary recortado. No se rediseñan hasta que Home/ficha/OSD se sientan bien.
+Settings, PVR, música, addons, teclado, selectores: recolor + tipografía + focus tokens. Layout Estuary recortado. No se rediseñan hasta que el player se sienta bien.
 
 ---
 
@@ -166,16 +194,16 @@ Settings, PVR, música, addons, teclado, selectores: recolor + tipografía + foc
 skin.aura/
   addon.xml                 # id, xbmc.gui version, res 1920x1080
   xml/
-    Home.xml                # pestañas + hero + shelves
-    Includes.xml            # puntos de entrada
-    Includes_Colors.xml     # tokens
-    Includes_Focus.xml      # zoom/sombra del lockup
-    Includes_Lockups.xml    # poster / landscape / hero
-    Includes_Home.xml       # WidgetListPoster / Landscape
-    MyVideoNav.xml          # vistas de biblioteca
-    View_*.xml
+    VideoOSD.xml            # cromo de reproducción (prioridad)
+    DialogSeekBar.xml       # barra + tiempos, alineado al OSD
+    DialogSelect.xml        # hojas de audio / subs / vídeo (Piers)
+    Custom_1102_PlayerStreams.xml  # opcional, dos columnas
+    DialogSubtitles.xml     # descargar SRT, mismo look
+    DialogPlayerProcessInfo.xml
+    Home.xml                # pestañas + hero + shelves (después)
+    Includes_Colors.xml / Includes_Focus.xml / Includes_Lockups.xml
     DialogVideoInfo.xml
-    DialogSeekBar.xml
+    MyVideoNav.xml
     …resto copiado de Estuary y retocado
   media/                    # PNG, máscaras, sombras (Textures.xbt al empaquetar)
   fonts/
@@ -187,7 +215,7 @@ skin.aura/
 
 Resolución de trabajo: **1920×1080**. Otras aspectos después, si hace falta.
 
-Dependencias del MVP: solo `xbmc.gui` (versión de Omega/Piers). Sin Skin Shortcuts, sin TMDbHelper. Eso mantiene la skin usable en un Pi / CoreELEC sin instalar media center extra.
+Dependencias del MVP: `xbmc.gui` de **Piers (Kodi 22)**. Sin Skin Shortcuts, sin TMDbHelper, sin Up Next de terceros. El player usa APIs nativas de pistas.
 
 Opcional más adelante: `script.skinshortcuts` para reordenar estanterías desde Settings.
 
@@ -205,44 +233,46 @@ Cada fase termina en un zip instalable y una checklist de mando (arriba/abajo/ok
 
 ### Fase 1 — Scaffold
 
-- Copiar Estuary Omega/Piers.
-- Renombrar a `skin.aura` (addon id, carpeta, `addon.xml`).
-- Paleta oscura + fuente + tokens de color.
-- Empaquetar Textures.xbt, instalar en Kodi, confirmar que arranca.
+- Copiar Estuary **Piers**.
+- Renombrar a `skin.aura`.
+- Paleta oscura + fuente + tokens.
+- Confirmar que arranca y que se puede reproducir un vídeo.
 
-### Fase 2 — Home Aura (prioridad máxima)
+### Fase 2 — Player (prioridad máxima)
 
-- Quitar el menú lateral de Estuary.
-- Pestañas superiores.
-- Hero + 3–5 estanterías con lockup Apple-like.
+- `VideoOSD.xml`: 5 acciones, título, restante. Sin iconos de más.
+- `DialogSeekBar.xml` alineado al OSD (una sola pieza visual).
+- Hojas `DialogSelectAudio` / `DialogSelectSubtitle`: idioma primero, Off en subs, un click.
+- Botón CC y Audio en el OSD con **label del estado actual** (`ES 5.1`, `CC Off`).
+- `···` para delay / info; no para elegir pista.
+- Keymap: OK abre OSD, abajo abre pistas, skip ±10s.
+- Series: `Siguiente episodio` si hay next.
+
+**Criterio de éxito:** la demo de [`docs/player-ux.md`](docs/player-ux.md) (2 audios, 3 subs, un click cada cambio, el vídeo no se pausa).
+
+### Fase 3 — Ficha del título
+
+- DialogVideoInfo: Play evidente, meta clara, que no añada fricción antes del player.
+
+### Fase 4 — Home Aura
+
+- Quitar sidebar de Estuary.
+- Pestañas, hero, estanterías.
 - Empty state.
-- Skin settings mínimos: mostrar/ocultar estanterías.
 
-**Criterio de éxito:** con el mando, en 3 segundos se entiende dónde está el foco y se puede reanudar algo.
+### Fase 5 — Biblioteca + pulido
 
-### Fase 3 — Biblioteca + ficha
-
-- Poster view alineada al lockup de Home.
-- DialogVideoInfo tipo página de título.
-- Navegación coherente Home → ficha → play.
-
-### Fase 4 — OSD y búsqueda
-
-- Seekbar / pause overlay limpios.
-- Search como pestaña de primer nivel.
-
-### Fase 5 — Pulido
-
-- Música, PVR, addons, settings (recolor).
-- Localización es/en.
-- Capturas, icono, fanart.
-- Rendimiento en hardware débil (límites de widgets, menos animaciones).
+- Poster view, search, recolor de settings/PVR/música.
+- Localización es/en, capturas, rendimiento ARM.
 
 ### Fuera de alcance del MVP
 
 - Temas claro/oscuro múltiples.
-- Personalización total tipo Arctic (cualquier nodo, cualquier widget).
+- Personalización total tipo Arctic.
 - Clone pixel-perfect de tvOS.
+- Skip intro por IA / créditos automáticos sin chapters.
+- Omega 21 como target del player (sin diálogos de pistas).
+- Up Next / TMDbHelper como dependencia.
 - Soporte táctil/tablet como prioridad.
 - 4K nativo / ultrawide.
 
@@ -252,11 +282,12 @@ Cada fase termina en un zip instalable y una checklist de mando (arriba/abajo/ok
 
 | Riesgo | Mitigación |
 | --- | --- |
-| Home “bonita” y el resto Estuary se siente roto | Tokens globales (color, fuente, focus) desde Fase 1 |
-| Zoom de foco recorta posters | `scrolltime` + padding en wraplists; no clip del container |
-| Demasiados widgets = lag en ARM | `limit` bajo (15–20); landscapes pesados solo en hero |
-| xbmc.gui cambia entre Omega y Piers | Target una major; bump consciente |
-| Marca Apple | Naming e iconografía propios; “inspired by”, no clone |
+| El OSD sigue oliendo a Estuary (settings, cycle) | Fase 2 bloquea el resto; demo de pistas es el gate |
+| DialogSelect de Piers no admite dos columnas | Plan A: dos hojas gemelas; Plan B: custom window |
+| OSD + SeekBar se desalinean (dos ventanas Kodi) | Includes compartidos, mismas coordenadas Y |
+| Abrir la hoja pausa o tapa caras | Panel inferior/lateral ~40% de alto; `Player.Paused` no se toca |
+| Zoom de foco recorta posters (home, más tarde) | padding en wraplists |
+| Marca Apple | Naming e iconografía propios |
 | Scope creep (PVR, karaoke, games…) | Estuary heredado hasta Fase 5 |
 
 ---
@@ -271,19 +302,22 @@ Kodi en esta VM de desarrollo no es el entorno real. El loop previsto:
 4. Probar con teclado como D-pad (flechas, enter, backspace).
 5. Más adelante: CoreELEC / Windows HTPC con mando real.
 
-Checklist por pantalla: foco visible, loop de navegación sin callejones, back vuelve a Home, play desde hero y desde poster.
+Checklist del player (obligatoria): OSD no pausa, Audio/CC muestran idioma actual, cambiar pista es un click, Back limpia la pantalla, skip 10s, siguiente episodio en series.
+
+Checklist de menús (después): foco visible, sin callejones, back vuelve a Home.
 
 ---
 
 ## 10. Decisiones tomadas (para no bloquear)
 
-1. **Producto:** skin Kodi, no frontend alternativo (Chorus, Jellyfin, etc.).
-2. **Look:** tvOS moderno (shelves + hero + tabs), no icon grid ATV3.
-3. **Base:** fork de Estuary, no from-scratch.
-4. **Nombre de trabajo:** Aura.
-5. **Target:** Kodi 21 Omega / 22 Piers, 1080p.
-6. **Idioma de UI:** español + inglés.
-7. **Dependencias extra:** ninguna en el MVP.
+1. **Producto:** skin Kodi. El core es el reproductor, no el launcher.
+2. **Player:** hoja de pistas (idioma primero), no CycleSubtitle ni settings de audio para cambiar de lengua.
+3. **Look de menús:** tvOS moderno (shelves + hero + tabs), no icon grid ATV3.
+4. **Base:** fork de Estuary Piers.
+5. **Nombre de trabajo:** Aura.
+6. **Target:** Kodi 22 Piers, 1080p.
+7. **Idioma de UI:** español + inglés.
+8. **Dependencias extra:** ninguna en el MVP.
 
 ---
 
@@ -291,9 +325,9 @@ Checklist por pantalla: foco visible, loop de navegación sin callejones, back v
 
 Cuando se pase de plan a código:
 
-1. Vendor de Estuary (subtree o copia con atribución) → `skin.aura/`.
-2. Design tokens en `colors/` + `Includes_Focus.xml` + `Includes_Lockups.xml`.
-3. Reescribir `Home.xml` al layout de la sección 5.1.
-4. Zip + instrucciones de instalación en el README.
+1. Vendor de Estuary Piers → `skin.aura/`.
+2. Rehacer `VideoOSD.xml` + `DialogSeekBar.xml` + skins de `DialogSelectAudio/Subtitle`.
+3. Demo con un MKV multi-pista (la checklist de `docs/player-ux.md`).
+4. Después: ficha y Home.
 
-Hasta entonces, este archivo y `docs/design-system.md` son la fuente de verdad.
+Hasta entonces, `PLAN.md`, `docs/player-ux.md` y `docs/design-system.md` son la fuente de verdad.

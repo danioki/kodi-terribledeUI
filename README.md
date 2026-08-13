@@ -1,10 +1,11 @@
 # Aura — skin de Kodi inspirada en Apple TV
 
-Interfaz de salón para Kodi: oscura, con estanterías horizontales, hero y foco claro. Inspirada en el Apple TV actual (tvOS), no en Estuary ni en las clones de Apple TV 2/3/4.
+El foco del producto es **ver** películas y series: subtítulos, audio, seek y el siguiente episodio como en un reproductor moderno. El home (estanterías, hero, pestañas) es el marco.
 
 Estado: **planificación**. Aún no hay skin instalable.
 
-- Plan de producto y fases: [PLAN.md](PLAN.md)
+- Plan: [PLAN.md](PLAN.md)
+- Experiencia de reproducción: [docs/player-ux.md](docs/player-ux.md)
 - Tokens visuales: [docs/design-system.md](docs/design-system.md)
 
-Nombre de trabajo: **Aura** (`skin.aura`). Base prevista: fork de Estuary (Omega/Piers), licencia compatible CC BY-SA 4.0.
+Nombre de trabajo: **Aura** (`skin.aura`). Base: Estuary en Kodi 22 Piers (diálogos nativos de pistas de audio/subs). Licencia compatible CC BY-SA 4.0.

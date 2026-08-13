@@ -9,6 +9,7 @@ Inspirado en tvOS actual. No es una copia de Human Interface Guidelines de Apple
 3. **Aire.** Márgenes laterales ~80–100 px. Estanterías no pegadas al borde.
 4. **Oscuro de verdad.** Fondo negro, no gris azulado de Estuary.
 5. **Artwork manda.** El poster *es* el botón. Iconos de chrome, mínimos.
+6. **El vídeo manda más.** Durante playback, el cromo es inferior, transitorio y nunca tapa el centro. Audio y CC son acciones de primer nivel, no settings.
 
 ## Color
 
@@ -43,6 +44,9 @@ Escala 1080p (aprox.):
 | Tab | 26–28 | Medium / Semibold si activa | Barra superior |
 | Body / meta | 22 | Regular | Año, duración |
 | Clock | 24 | Regular | Esquina |
+| OSD title | 32 | Semibold | Título sobre el vídeo |
+| OSD meta | 22 | Regular | Restante, idioma actual |
+| Stream row | 28 / 22 | Semibold / Regular | Idioma / codec en la hoja |
 
 Tracking amplio en tabs. Evitar ALL CAPS de Estuary.
 
@@ -110,6 +114,22 @@ Fila horizontal, no sidebar.
 
 Sin rebotes. Sin slides laterales de ventana tipo Estuary si se puede evitar (dan sensación “Kodi 2016”).
 
+## Player chrome
+
+Layout 1080p del overlay (detalle de interacción en `docs/player-ux.md`):
+
+```
+safe-x:          96
+osd-bottom:      0–280  (gradiente negro → transparente hacia arriba)
+seekbar-y:       ~920
+actions-y:       ~980
+stream-sheet:    bottom 52% or right 42%; nunca un modal centrado
+```
+
+- Acciones OSD: icono 48 + label 22. Audio y CC **llevan texto de estado** (`ES 5.1`, `Off`), no solo el pictograma.
+- Hoja de pistas: fila 72 px, tick a la izquierda, dos líneas. Columna activa con foco claro.
+- El seek no usa el slider gordo de Estuary; línea de 4 px, knob 16 al foco.
+
 ## Iconografía
 
 Línea fina, 2 px, estilo SF Symbols *en espíritu* — set propio o Material Symbols / Lucide rasterizados a PNG. Nunca el logo de Apple ni iconos de apps de tvOS.
@@ -132,3 +152,6 @@ Opcional. tvOS usa ticks de foco. Kodi: `resource.uisounds.*`. Fuera del MVP; el
 - Poster con borde arcoíris + overlay de info densa.
 - Vista wall con 20 posters minúsculos.
 - Tipografía condensada y labels en mayúsculas.
+- OSD con 12 botones de codec/settings.
+- Cambiar de idioma vía `CycleSubtitle` o `osdaudiosettings`.
+- Panel que cubre caras / pausa el vídeo al abrir pistas.
