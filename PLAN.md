@@ -2,9 +2,12 @@
 
 Nombre de trabajo: **Aura** (`skin.aura`).
 
-Objetivo principal: **ver una película o una serie sin pelearte con Kodi**. Cambiar subtítulos, cambiar audio, saltar 10 segundos y pasar al siguiente capítulo tiene que ser tan directo como en un reproductor moderno (Apple TV / Disney+). El look de salón (pestañas, hero, estanterías) es el marco; el producto es el player.
+Objetivo: dos pilares al mismo nivel.
 
-Spec de reproducción: [`docs/player-ux.md`](docs/player-ux.md).
+1. **Home** — al abrir Kodi, **Novedades** primero y después las secciones de siempre (seguir viendo, películas, series…). Spec: [`docs/home-ux.md`](docs/home-ux.md).
+2. **Player** — ver sin pelearte con Kodi (audio, subtítulos, seek, siguiente episodio). Spec: [`docs/player-ux.md`](docs/player-ux.md).
+
+El look de salón no es un marco decorativo: es cómo se descubre el contenido. El player es cómo se ve.
 
 Este documento es el plan de producto y arquitectura. No implementa la skin todavía.
 
@@ -18,19 +21,19 @@ Por eso **no se diseña una app nueva**. Se diseña una skin que Kodi puede carg
 
 ### Prioridad de producto
 
-1. **Reproducción seamless** — OSD, audio, subtítulos, seek, siguiente episodio.
-2. Ficha del título (Play sin fricción).
-3. Home / biblioteca al estilo tvOS (descubrimiento).
+1. **Home** — Novedades primero, luego las secciones normales. Descubrir sin sidebar.
+2. **Reproducción seamless** — OSD, audio, subtítulos, seek, siguiente episodio.
+3. Ficha del título (Play / Info sin fricción).
 
-Si hay que recortar, se recorta el home, no el player.
+Recortar settings, PVR chrome y temas. No recortar ni el feed de Inicio ni el player.
 
 ### Referencia visual: Apple TV *actual*
 
 El Apple TV de 2015 (rejilla de iconos de apps) **no** es el que queremos. Skins como AppTV y tvOS-X copian esa generación. El tvOS moderno es un catálogo de streaming:
 
 - Barra superior de pestañas (Watch Now / Library / Search), no un menú lateral gordo.
-- Un **hero** grande arriba (artwork de lo destacado o en curso).
-- Debajo, **estanterías horizontales** (Continue Watching, Recently Added, Movies, Shows).
+- Un **hero** grande arriba (fanart de lo enfocado en Novedades).
+- Debajo, **Novedades** (recién añadido) y **después** las estanterías normales (seguir viendo, películas, series).
 - Posters con esquinas redondeadas.
 - El foco **escala**, levanta sombra y muestra el título; el resto se queda quieto.
 - Fondo casi negro, tipografía grande, poco cromo, mucho espacio.
@@ -112,9 +115,29 @@ Principio: **un solo foco inequívoco**. Nada de bordes de color + glow + underl
 
 ## 5. Pantallas que definen el producto
 
-El 80% de la percepción es **el player**. Home + biblioteca + ficha solo sirven para llegar a Play. El resto puede quedar “Estuary oscuro” al principio.
+Dos firmas: **Inicio** (descubrir) y **Player** (ver). El resto puede quedar “Estuary oscuro” al principio.
 
-### 5.0 Player (la firma)
+### 5.0 Home (Novedades + secciones)
+
+Detalle en [`docs/home-ux.md`](docs/home-ux.md).
+
+Al arrancar, el feed de Inicio es un scroll vertical. **Novedades va primero.** Luego las secciones que uno espera en un salón:
+
+| Orden | Sección | Rol |
+| --- | --- | --- |
+| 1 | **Novedades** — películas y episodios recién añadidos | Firma del home. Lockup landscape. Hero ligado al foco |
+| 2 | **Seguir viendo** | In-progress, con barra |
+| 3 | **Películas** | Estantería de posters (atajo; la pestaña abre la biblioteca) |
+| 4 | **Series** | Igual |
+| 5+ | Favoritos, Música, Directo, Addons | Solo si hay contenido |
+
+Novedades en Kodi = `dateadded` (lo que acaba de entrar en la librería), no un editorial de tienda. No se duplica “recently added” más abajo.
+
+Pestañas: Search · **Inicio** · Películas · Series. Inicio *es* el feed; no hay un tab aparte de Novedades.
+
+Criterio de éxito: arrancar y ver Novedades sin buscar; abajo Seguir viendo y las bibliotecas; sin sidebar.
+
+### 5.1 Player
 
 Detalle en [`docs/player-ux.md`](docs/player-ux.md).
 
@@ -127,47 +150,6 @@ Dos capas:
 Estuary hoy manda al usuario a `osdaudiosettings` / `osdsubtitlesettings` / `CycleSubtitle`. Eso se sustituye. En Piers, los botones Audio y CC abren `DialogSelectAudio` y `DialogSelectSubtitle` skineados como esa hoja.
 
 Criterio de éxito: MKV con 2 audios y 3 subs → cambiar idioma y CC en un click cada uno, sin entrar en Settings.
-
-### 5.1 Home (la firma)
-
-```
-┌─────────────────────────────────────────────────────────┐
-  Search    Watch Now    Movies    TV    Library    [clock]
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│   HERO  16:9  (fanart + logo + Play / More info)        │
-│                                                         │
-├─────────────────────────────────────────────────────────┤
-│  Continue Watching                                      │
-│  [■■] [■■] [■■] [■■] [■■] →                             │
-│  Recently Added Movies                                  │
-│  [█] [█] [█] [█] [█] [█] →                              │
-│  Recently Added TV Shows                                │
-│  [█] [█] [█] [█] [█] [█] →                              │
-└─────────────────────────────────────────────────────────┘
-```
-
-Comportamiento:
-
-1. Arriba: pestañas (grouplist horizontal). Foco inicial en **Watch Now**.
-2. Watch Now no “cambia de categoría Estuary”; es un **scroll vertical de estanterías**.
-3. Arriba/abajo cambia de estantería; izquierda/derecha recorre ítems.
-4. El hero refleja el ítem enfocado (fanart + título) *o* un destacado fijo. Decisión de MVP: **hero ligado al foco** (más Apple TV / Netflix living room).
-5. Movies / TV / Library abren las ventanas nativas, no otra home distinta.
-6. Search abre `DialogSearch` / ventana de búsqueda.
-
-Widgets por defecto (si hay librería):
-
-| Estantería | Fuente Kodi |
-| --- | --- |
-| Continue Watching | `videodb://inprogresstvshows` + in-progress movies |
-| Recently Added Movies | `videodb://recentlyaddedmovies` |
-| Recently Added TV | `videodb://recentlyaddedepisodes` |
-| Movies | `videodb://movies/titles/` |
-| TV Shows | `videodb://tvshows/titles/` |
-| Unwatched | playlist `.xsp` |
-
-Sin librería: empty state limpio (“Add media sources”) en vez del wall de iconos de Estuary.
 
 ### 5.2 Biblioteca (Movies / TV)
 
@@ -184,7 +166,7 @@ Página de título tipo Apple TV:
 
 ### 5.4 Resto (fase posterior)
 
-Settings, PVR, música, addons, teclado, selectores: recolor + tipografía + focus tokens. Layout Estuary recortado. No se rediseñan hasta que el player se sienta bien.
+Settings, PVR, música, addons, teclado, selectores: recolor + tipografía + focus tokens. Layout Estuary recortado. No se rediseñan hasta que Inicio y el player se sientan bien.
 
 ---
 
@@ -194,13 +176,14 @@ Settings, PVR, música, addons, teclado, selectores: recolor + tipografía + foc
 skin.aura/
   addon.xml                 # id, xbmc.gui version, res 1920x1080
   xml/
-    VideoOSD.xml            # cromo de reproducción (prioridad)
+    Home.xml                # Inicio: Novedades primero, luego secciones
+    Includes_Home.xml
+    VideoOSD.xml            # cromo de reproducción
     DialogSeekBar.xml       # barra + tiempos, alineado al OSD
     DialogSelect.xml        # hojas de audio / subs / vídeo (Piers)
     Custom_1102_PlayerStreams.xml  # opcional, dos columnas
     DialogSubtitles.xml     # descargar SRT, mismo look
     DialogPlayerProcessInfo.xml
-    Home.xml                # pestañas + hero + shelves (después)
     Includes_Colors.xml / Includes_Focus.xml / Includes_Lockups.xml
     DialogVideoInfo.xml
     MyVideoNav.xml
@@ -238,7 +221,18 @@ Cada fase termina en un zip instalable y una checklist de mando (arriba/abajo/ok
 - Paleta oscura + fuente + tokens.
 - Confirmar que arranca y que se puede reproducir un vídeo.
 
-### Fase 2 — Player (prioridad máxima)
+### Fase 2 — Home (Novedades + secciones)
+
+- Quitar el sidebar de Estuary.
+- Pestañas Search · Inicio · Películas · Series.
+- Hero ligado al foco.
+- Bloque **Novedades** primero (películas + episodios recently added, lockup landscape).
+- Después: Seguir viendo, Películas, Series; el resto solo si hay contenido.
+- Empty states; no duplicar recently added.
+
+**Criterio de éxito:** la demo de [`docs/home-ux.md`](docs/home-ux.md).
+
+### Fase 3 — Player
 
 - `VideoOSD.xml`: 5 acciones, título, restante. Sin iconos de más.
 - `DialogSeekBar.xml` alineado al OSD (una sola pieza visual).
@@ -250,15 +244,9 @@ Cada fase termina en un zip instalable y una checklist de mando (arriba/abajo/ok
 
 **Criterio de éxito:** la demo de [`docs/player-ux.md`](docs/player-ux.md) (2 audios, 3 subs, un click cada cambio, el vídeo no se pausa).
 
-### Fase 3 — Ficha del título
+### Fase 4 — Ficha del título
 
 - DialogVideoInfo: Play evidente, meta clara, que no añada fricción antes del player.
-
-### Fase 4 — Home Aura
-
-- Quitar sidebar de Estuary.
-- Pestañas, hero, estanterías.
-- Empty state.
 
 ### Fase 5 — Biblioteca + pulido
 
@@ -282,11 +270,12 @@ Cada fase termina en un zip instalable y una checklist de mando (arriba/abajo/ok
 
 | Riesgo | Mitigación |
 | --- | --- |
-| El OSD sigue oliendo a Estuary (settings, cycle) | Fase 2 bloquea el resto; demo de pistas es el gate |
+| El OSD sigue oliendo a Estuary (settings, cycle) | Demo de pistas es gate de la fase Player |
+| Inicio sigue siendo sidebar + widgets | Novedades primero es gate de la fase Home |
+| Recently added duplicado más abajo | Un solo bloque Novedades; las estanterías de Películas/Series son catálogo |
 | DialogSelect de Piers no admite dos columnas | Plan A: dos hojas gemelas; Plan B: custom window |
-| OSD + SeekBar se desalinean (dos ventanas Kodi) | Includes compartidos, mismas coordenadas Y |
-| Abrir la hoja pausa o tapa caras | Panel inferior/lateral ~40% de alto; `Player.Paused` no se toca |
-| Zoom de foco recorta posters (home, más tarde) | padding en wraplists |
+| OSD + SeekBar se desalinean | Includes compartidos, mismas coordenadas Y |
+| Zoom de foco recorta posters / landscapes | padding en wraplists |
 | Marca Apple | Naming e iconografía propios |
 | Scope creep (PVR, karaoke, games…) | Estuary heredado hasta Fase 5 |
 
@@ -302,22 +291,25 @@ Kodi en esta VM de desarrollo no es el entorno real. El loop previsto:
 4. Probar con teclado como D-pad (flechas, enter, backspace).
 5. Más adelante: CoreELEC / Windows HTPC con mando real.
 
+Checklist de Inicio (obligatoria): arranca en Novedades, hero sigue al foco, Seguir viendo debajo, Películas/Series después, sin sidebar ni recently added duplicado.
+
 Checklist del player (obligatoria): OSD no pausa, Audio/CC muestran idioma actual, cambiar pista es un click, Back limpia la pantalla, skip 10s, siguiente episodio en series.
 
-Checklist de menús (después): foco visible, sin callejones, back vuelve a Home.
+Checklist del resto (después): foco visible, sin callejones, back vuelve a Inicio.
 
 ---
 
 ## 10. Decisiones tomadas (para no bloquear)
 
-1. **Producto:** skin Kodi. El core es el reproductor, no el launcher.
-2. **Player:** hoja de pistas (idioma primero), no CycleSubtitle ni settings de audio para cambiar de lengua.
-3. **Look de menús:** tvOS moderno (shelves + hero + tabs), no icon grid ATV3.
-4. **Base:** fork de Estuary Piers.
-5. **Nombre de trabajo:** Aura.
-6. **Target:** Kodi 22 Piers, 1080p.
-7. **Idioma de UI:** español + inglés.
-8. **Dependencias extra:** ninguna en el MVP.
+1. **Producto:** skin Kodi. Dos pilares: Inicio (Novedades + secciones) y player seamless.
+2. **Home:** Novedades primero (`dateadded`); después Seguir viendo, Películas, Series; el resto si hay contenido.
+3. **Player:** hoja de pistas (idioma primero), no CycleSubtitle ni settings de audio para cambiar de lengua.
+4. **Look:** tvOS moderno (shelves + hero + tabs), no icon grid ATV3.
+5. **Base:** fork de Estuary Piers.
+6. **Nombre de trabajo:** Aura.
+7. **Target:** Kodi 22 Piers, 1080p.
+8. **Idioma de UI:** español + inglés.
+9. **Dependencias extra:** ninguna en el MVP.
 
 ---
 
@@ -326,8 +318,9 @@ Checklist de menús (después): foco visible, sin callejones, back vuelve a Home
 Cuando se pase de plan a código:
 
 1. Vendor de Estuary Piers → `skin.aura/`.
-2. Rehacer `VideoOSD.xml` + `DialogSeekBar.xml` + skins de `DialogSelectAudio/Subtitle`.
-3. Demo con un MKV multi-pista (la checklist de `docs/player-ux.md`).
-4. Después: ficha y Home.
+2. `Home.xml`: Novedades primero, luego secciones normales.
+3. `VideoOSD.xml` + hojas de audio/subs.
+4. Demos de `docs/home-ux.md` y `docs/player-ux.md`.
+5. Después: ficha y biblioteca.
 
-Hasta entonces, `PLAN.md`, `docs/player-ux.md` y `docs/design-system.md` son la fuente de verdad.
+Hasta entonces, `PLAN.md`, `docs/home-ux.md`, `docs/player-ux.md` y `docs/design-system.md` son la fuente de verdad.

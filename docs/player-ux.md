@@ -222,4 +222,4 @@ Si el paso 3 o 4 exige entrar en “Settings”, no está hecho.
 | `DialogSettings.xml` | Solo lo que quede en `···` |
 | `addon.xml` + keymap | Atajos ↓ / lang |
 
-Home, biblioteca y ficha se diseñan **después**. Sirven para llegar a Play. El player es el producto.
+Home e Inicio se especifican en [`home-ux.md`](home-ux.md): Novedades primero, luego las secciones normales. Play desde ahí entra a este player.

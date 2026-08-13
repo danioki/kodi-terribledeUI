@@ -92,7 +92,7 @@ No hay parallax. No hay specular. El zoom *es* el foco.
 - Fanart a casi todo el ancho, recorte 16:9, viñeta a negro abajo.
 - Clearlogo si existe (`ListItem.Art(clearlogo)`), si no el título.
 - Dos botones: Play, Info. Foco por defecto en Play cuando el hero está activo.
-- Alternativa MVP: el hero es *display* del ítem enfocado en la primera estantería (no es un control aparte). Más simple de navegar.
+- Alternativa MVP: el hero es *display* del ítem enfocado en **Novedades** (primera estantería). Más simple de navegar y refuerza que Novedades manda.
 
 ## Tabs
 
